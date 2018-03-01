@@ -1,0 +1,135 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="SiecModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="SiecModelStoreContainer">
+    <EntitySet Name="Computers" EntityType="SiecModel.Store.Computers" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Responses" EntityType="SiecModel.Store.Responses" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_ID" Association="SiecModel.Store.FK_ID">
+      <End Role="Computers" EntitySet="Computers" />
+      <End Role="Responses" EntitySet="Responses" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Computers">
+    <Key>
+      <PropertyRef Name="PC_ID" />
+    </Key>
+    <Property Name="PC_ID" Type="int" Nullable="false" />
+    <Property Name="Name" Type="nvarchar" Nullable="true" MaxLength="50" />
+    <Property Name="IP" Type="nchar" Nullable="true" MaxLength="32" />
+  </EntityType>
+  <EntityType Name="Responses">
+    <Key>
+      <PropertyRef Name="Response_ID" />
+    </Key>
+    <Property Name="Response_ID" Type="int" Nullable="false" />
+    <Property Name="PC_ID" Type="int" Nullable="true" />
+    <Property Name="Value" Type="bit" Nullable="true" />
+    <Property Name="Time" Type="datetimeoffset" Nullable="true" Precision="7" />
+  </EntityType>
+  <Association Name="FK_ID">
+    <End Role="Computers" Type="SiecModel.Store.Computers" Multiplicity="0..1" />
+    <End Role="Responses" Type="SiecModel.Store.Responses" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Computers">
+        <PropertyRef Name="PC_ID" />
+      </Principal>
+      <Dependent Role="Responses">
+        <PropertyRef Name="PC_ID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SiecModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Computers">
+          <Key>
+            <PropertyRef Name="PC_ID" />
+          </Key>
+          <Property Name="PC_ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="IP" Type="String" MaxLength="32" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="Responses" Relationship="Self.FK_ID" FromRole="Computers" ToRole="Responses" />
+        </EntityType>
+        <EntityType Name="Responses">
+          <Key>
+            <PropertyRef Name="Response_ID" />
+          </Key>
+          <Property Name="Response_ID" Type="Int32" Nullable="false" />
+          <Property Name="PC_ID" Type="Int32" />
+          <Property Name="Value" Type="Boolean" />
+          <Property Name="Time" Type="DateTimeOffset" Precision="7" />
+          <NavigationProperty Name="Computers" Relationship="Self.FK_ID" FromRole="Responses" ToRole="Computers" />
+        </EntityType>
+        <Association Name="FK_ID">
+          <End Role="Computers" Type="Self.Computers" Multiplicity="0..1" />
+          <End Role="Responses" Type="Self.Responses" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Computers">
+              <PropertyRef Name="PC_ID" />
+            </Principal>
+            <Dependent Role="Responses">
+              <PropertyRef Name="PC_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SiecEntities2" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Computers" EntityType="Self.Computers" />
+          <EntitySet Name="Responses" EntityType="Self.Responses" />
+          <AssociationSet Name="FK_ID" Association="Self.FK_ID">
+            <End Role="Computers" EntitySet="Computers" />
+            <End Role="Responses" EntitySet="Responses" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="SiecModelStoreContainer" CdmEntityContainer="SiecEntities2">
+    <EntitySetMapping Name="Computers">
+      <EntityTypeMapping TypeName="IsTypeOf(SiecModel.Computers)">
+        <MappingFragment StoreEntitySet="Computers">
+          <ScalarProperty Name="PC_ID" ColumnName="PC_ID" />
+          <ScalarProperty Name="Name" ColumnName="Name" />
+          <ScalarProperty Name="IP" ColumnName="IP" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Responses">
+      <EntityTypeMapping TypeName="IsTypeOf(SiecModel.Responses)">
+        <MappingFragment StoreEntitySet="Responses">
+          <ScalarProperty Name="Response_ID" ColumnName="Response_ID" />
+          <ScalarProperty Name="PC_ID" ColumnName="PC_ID" />
+          <ScalarProperty Name="Value" ColumnName="Value" />
+          <ScalarProperty Name="Time" ColumnName="Time" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
