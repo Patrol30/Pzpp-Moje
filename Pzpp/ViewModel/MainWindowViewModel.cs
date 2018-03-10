@@ -24,39 +24,45 @@ namespace Pzpp
 
         public MainWindowViewModel()
         {
+            OpenComputersTableCommand = new RelayCommand(OpenComputersTable);
+            OpenResponsesTableCommand = new RelayCommand(OpenResponsesTable);
             AddDeviceCommand = new RelayCommand(AddDevice);
-            PingCommand = new RelayCommand(PingDevice);
+            PingCommand = new RelayCommand(PingDevice);            
             CanPing = false;
             CanAdd = false;
             using (var db = new PingDataContext())
             {
-                var ipAll = db.Devices.ToList();
-                foreach (var item in ipAll)
+                db.Database.CreateIfNotExists();
+                var devicesAll = db.Devices.ToList();
+                foreach (var item in devicesAll)
                 {
-                    Devices.Add(item);
                     DevicesIP.Add(item.IP);
+                    IdControl.Add(item.Id);
+                    DevicesList.Add(item.Name+" "+item.IP);
                 }
 
             }
+            
         }
         #region properties
 
         #region pinging properties
-        private ObservableCollection<string> _DevicesIP = new ObservableCollection<string>();
-        public ObservableCollection<string> DevicesIP
+        private ObservableCollection<string> _DevicesList = new ObservableCollection<string>();
+        public ObservableCollection<string> DevicesList
         {
             get
             {
-                return _DevicesIP;
+                return _DevicesList;
             }
             set
             {
-                _DevicesIP = value;
+                _DevicesList = value;
                 //PropertyChanged(this, new PropertyChangedEventArgs(nameof(DevicesIP)));  alternatywne by nie rozpisywać się tak za każdym razem jest funkcja OnPropertyChanged (użyta poniżej)
                 OnPropertyChanged();
             }
 
         }
+        private List<string> DevicesIP = new List<string>();
 
         private int _SelectedDevice;
         public int SelectedDevice
@@ -67,12 +73,18 @@ namespace Pzpp
             }
             set
             {
-                CanPing = true;
+                if (_SelectedDevice == value)
+                    return;
+                if (value != -1)
+                    CanPing = true;
+                else
+                    CanPing = false;
                 _SelectedDevice = value;
                 OnPropertyChanged();
             }
         }
-
+        private List<int> IdControl = new List<int>();
+        
 
         private bool _CanPing;
         public bool CanPing
@@ -142,6 +154,23 @@ namespace Pzpp
             }
         }
 
+        private string _Name;
+        public string Name
+        {
+            get
+            {
+                return _Name;
+            }
+            set
+            {
+                if (_Name == value)
+                    return;
+                _Name = value;
+                IPAddress = _IPAddress;
+                OnPropertyChanged();
+            }
+        }
+
         private string _IPAddress;
         public string IPAddress
         {
@@ -164,10 +193,10 @@ namespace Pzpp
                     correct =  check.IsMatch(value);
                 if (correct)
                 {
-                    if (!_DevicesIP.Contains(value))
-                    {
+                    
+                        if(_Name!=null)
                         CanAdd = true;
-                    }
+                    
                     else CanAdd = false;
 
                 }
@@ -194,46 +223,16 @@ namespace Pzpp
             }
         }
 
-
+        #region Tables
+        
 
 
         #endregion
 
-        #region tables properties
-        private ObservableCollection<Responses> _PingResponds;
-        public ObservableCollection<Responses> PingResponds
-        {
-            get
-            {
-                return _PingResponds;
-            }
 
-            set
-            {
-                if (_PingResponds == value)
-                    return;
-                _PingResponds = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private ObservableCollection<Devices> _Devices;
-        public ObservableCollection<Devices> Devices
-        {
-            get
-            {
-                return _Devices;
-            }
-
-            set
-            {
-                if (_Devices == value)
-                    return;
-                _Devices = value;
-                OnPropertyChanged();
-            }
-        }
         #endregion
+
+
         #endregion
         #region Commands
 
@@ -243,38 +242,39 @@ namespace Pzpp
             Ping pinger = new Ping();
             try
             {
-                PingReply reply = pinger.Send(DevicesIP[SelectedDevice]);
-                using (var db = new PingDataContext())
+                if (_SelectedDevice != -1)
                 {
-                    if (reply.Status == IPStatus.Success)
+                    var id = IdControl[_SelectedDevice];
+                    PingReply reply = pinger.Send(DevicesIP[SelectedDevice]);
+                    using (var db = new PingDataContext())
                     {
-                        PingStatusColor = "Green";
-                        PingStatusText = "TRUE";
-                        db.Responses.Add(new Responses()
+                        if (reply.Status == IPStatus.Success)
                         {
-                            ID = System.Guid.NewGuid(),
-                            Device = Devices[SelectedDevice],
-                            Success = true,
-                            Time = reply.RoundtripTime
-                        });
-                    }
-                    else
-                    {
-                        PingStatusColor = "Red";
-                        PingStatusText = "False";
-                        db.Responses.Add(new Responses()
+                            PingStatusColor = "Green";
+                            PingStatusText = "TRUE";
+                            db.Responses.Add(new Responses()
+                            {
+                                Device_Id = id,
+                                Success = true,
+                                Time = reply.RoundtripTime
+                            });
+                        }
+                        else
                         {
-                            ID = System.Guid.NewGuid(),
-                            Device = Devices[SelectedDevice],
-                            Success = false,
-                            
-                        });
-                    }
-                    var responses = db.Responses.ToList();
+                            PingStatusColor = "Red";
+                            PingStatusText = "False";
+                            db.Responses.Add(new Responses()
+                            {
 
-                    foreach (var item in responses)                    
-                        PingResponds.Add(item);                        
-                    
+                                Device_Id = id,
+                                Success = false
+
+
+
+                            });
+                        }
+                        db.SaveChanges();
+                    }
                 }
             }
             catch (PingException)
@@ -293,20 +293,38 @@ namespace Pzpp
                 db.Devices.Add(new Devices()
                 {
                     IP = _IPAddress,
+                    Name = _Name,
                     Description = _Description
                 });
                 
-                var ipAll = db.Devices.ToList();
+                db.SaveChanges();
+                DevicesList.Add(_Name + " " + _IPAddress);
+                DevicesIP.Add(_IPAddress);
+                IdControl.Add(db.Devices.ToList().Last().Id);
+                //DevicesList.Clear();
+                //IdControl.Clear();
+                //var ipAll = db.Devices.ToList();
                 
-                foreach (var item in ipAll)
-                {
-                    Devices.Add(item);
-                    DevicesIP.Add(item.IP);
-                }
+                //foreach (var item in ipAll)
+                //{                   
+                //    DevicesList.Add(item.Name +" "+ item.IP);
+                //    IdControl.Add(item.Id);
+                //}
             }
         }
 
-
+        public ICommand OpenComputersTableCommand { get;private set; }
+        private void OpenComputersTable()
+        {            
+            Computers computers = new Computers();
+            computers.ShowDialog();
+        }
+        public ICommand OpenResponsesTableCommand { get; private set; }
+        private void OpenResponsesTable()
+        {            
+            ResponsesTable responses = new ResponsesTable();
+            responses.ShowDialog();
+        }
         #endregion
 
 

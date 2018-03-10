@@ -11,5 +11,6 @@ namespace Pzpp
     {
         public DbSet<Devices> Devices { get; set; }
         public DbSet<Responses> Responses { get; set; }
+
     }
 }

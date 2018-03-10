@@ -15,15 +15,17 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="1.5*" />
+            <RowDefinition Height="1.8*" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="10">
+            <TextBlock Text="Give me your Name:" HorizontalAlignment="Center" Margin="5"/>
+            <TextBox Text="{Binding Name}" Margin="5"/>
             <TextBlock Text="Give me your IP:" HorizontalAlignment="Center" Margin="5"/>
             <TextBox Text="{Binding IPAddress}" Margin="5"/>
             <TextBlock Text="Give me Description:" HorizontalAlignment="Center" Margin="5"/>
             <TextBox Text="{Binding Description}" Margin="5"/>
-            <Button Command="{Binding AddDeviceCommand}" Margin="5" >
+            <Button Command="{Binding AddDeviceCommand}" Margin="5" IsEnabled="{Binding CanAdd}" >
                 <Button.Content>
                     <TextBlock Text="ADD" Typography.Capitals="PetiteCaps"/>
                 </Button.Content>
@@ -31,9 +33,9 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="0" Margin="30" Grid.ColumnSpan="2" VerticalAlignment="Center">
             <TextBlock Text="Choose your IP from the list:" HorizontalAlignment="Center" Margin="5"/>
-            <ComboBox  ItemsSource="{Binding DevicesIP, Mode=OneWay}" DisplayMemberPath="Name" SelectedValuePath="Name" 
+            <ComboBox  ItemsSource="{Binding DevicesList, Mode=OneWay}" 
                          SelectedIndex="{Binding SelectedDevice, Mode=OneWayToSource}" Margin="5" />
-            <Button Command="{Binding PingCommand}" Margin="10">
+            <Button Command="{Binding PingCommand}" Margin="10" IsEnabled="{Binding CanPing}">
                 <Button.Content>
                     <TextBlock Text="PING" Typography.Capitals="PetiteCaps" />
                 </Button.Content>
@@ -43,12 +45,12 @@
             
         </StackPanel>
         <StackPanel Grid.Column="0" Grid.Row="1" Margin="15" Grid.ColumnSpan="3" VerticalAlignment="Center">
-            <Button Margin="10" >
+            <Button Margin="10" Command="{Binding OpenComputersTableCommand}">
                 <Button.Content>
                     <TextBlock Text="Show computers list" Typography.Capitals="PetiteCaps" />
                 </Button.Content>
             </Button>
-            <Button Margin="10" >
+            <Button Margin="10" Command="{Binding OpenResponsesTableCommand}" >
                 <Button.Content>
                     <TextBlock Text="Show responses list" Typography.Capitals="PetiteCaps" />
                 </Button.Content>

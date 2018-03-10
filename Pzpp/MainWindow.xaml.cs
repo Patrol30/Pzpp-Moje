@@ -31,10 +31,10 @@ namespace Pzpp
     
     public MainWindow()
         {
-            using (var db = new PingDataContext())
-            {
-                db.Database.CreateIfNotExists();
-            }
+            //using (var db = new PingDataContext())
+            //{
+            //    db.Database.CreateIfNotExists();
+            //}
             string dataPath = AppDomain.CurrentDomain.BaseDirectory;
             AppDomain
                 .CurrentDomain
