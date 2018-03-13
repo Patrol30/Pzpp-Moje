@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Pzpp"
         mc:Ignorable="d"
-        Title="Computers Table" Height="300" Width="500">
+        Title="Responses Table" Height="300" Width="500" ResizeMode="NoResize">
     <Grid>
         <ListView  Grid.Row="1" ItemsSource="{Binding PingResponses}" BorderBrush="DeepSkyBlue" Grid.ColumnSpan="3">
             <ListView.View>
@@ -14,7 +14,7 @@
                     <GridViewColumn Header="Respond ID" Width="100" DisplayMemberBinding="{Binding Id}"/>
                     <GridViewColumn Header="Computer Id" Width="100" DisplayMemberBinding="{Binding Device_Id}"/>
                     <GridViewColumn Header="Result" Width="100" DisplayMemberBinding="{Binding Success}"/>
-                    <GridViewColumn Header="Time" Width="200" DisplayMemberBinding="{Binding Time}"/>
+                    <GridViewColumn Header="Time" Width="182" DisplayMemberBinding="{Binding Time}"/>
                 </GridView>
             </ListView.View>
         </ListView>
