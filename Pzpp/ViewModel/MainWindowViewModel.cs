@@ -63,7 +63,7 @@ namespace Pzpp
             }
 
         }
-        private List<string> DevicesIP = new List<string>();
+        private ObservableCollection<string> DevicesIP = new ObservableCollection<string>();
 
         private int _SelectedDevice;
         public int SelectedDevice
@@ -308,6 +308,20 @@ namespace Pzpp
         {            
             Computers computers = new Computers();
             computers.ShowDialog();
+            using (var db = new PingDataContext())
+            {
+                DevicesIP.Clear();
+                IdControl.Clear();
+                DevicesList.Clear();             
+                var devicesAll = db.Devices.ToList();
+                foreach (var item in devicesAll)
+                {
+                    DevicesIP.Add(item.IP);
+                    IdControl.Add(item.Id);
+                    DevicesList.Add(item.Name + " " + item.IP);
+                }
+
+            }
         }
         public ICommand OpenResponsesTableCommand { get; private set; }
         private void OpenResponsesTable()

@@ -7,8 +7,8 @@
         xmlns:local="clr-namespace:Pzpp"
         mc:Ignorable="d"
         Title="Computers Table" Height="300" Width="700" ResizeMode="NoResize">
-    <Grid>
-        <ListView  Grid.Row="1" ItemsSource="{Binding Computers}" BorderBrush="DeepSkyBlue" Grid.ColumnSpan="3">
+    <StackPanel>
+        <ListView  Grid.Row="1" ItemsSource="{Binding Computers}" BorderBrush="DeepSkyBlue" Grid.ColumnSpan="3" SelectedIndex="{Binding SelectedDevice}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="COMPUTER ID" Width="92" DisplayMemberBinding="{Binding Id}"/>
@@ -17,6 +17,7 @@
                     <GridViewColumn Header="DESCRIPTION" Width="259" DisplayMemberBinding="{Binding Description}"/>
                 </GridView>
             </ListView.View>
-        </ListView>
-    </Grid>
+        </ListView>   
+        <Button Content="Delete" Command="{Binding DeleteCommand}"/>
+    </StackPanel>
 </Controls:MetroWindow>
