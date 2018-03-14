@@ -29,7 +29,7 @@ namespace Pzpp
                 PingResponses = db.Responses.ToList();
             }
         }
-        static List<Responses> _PingResponses;
+        private List<Responses> _PingResponses;
         public List<Responses> PingResponses
         {
             get

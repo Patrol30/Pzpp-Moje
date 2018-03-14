@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -181,8 +182,7 @@ namespace Pzpp
 
             set
             {
-                if (_IPAddress == value)
-                    return;
+               
                 bool correct;
                 string Pattern = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
                 Regex check = new Regex(Pattern);
@@ -193,11 +193,11 @@ namespace Pzpp
                     correct =  check.IsMatch(value);
                 if (correct)
                 {
+
+                    if (_Name == null||_Name=="")
+                        CanAdd = false;
                     
-                        if(_Name!=null)
-                        CanAdd = true;
-                    
-                    else CanAdd = false;
+                    else CanAdd = true;
 
                 }
                 else CanAdd = false;
@@ -223,12 +223,7 @@ namespace Pzpp
             }
         }
 
-        #region Tables
-        
-
-
-        #endregion
-
+       
 
         #endregion
 
@@ -256,7 +251,8 @@ namespace Pzpp
                             {
                                 Device_Id = id,
                                 Success = true,
-                                Time = reply.RoundtripTime
+                                PingTime = reply.RoundtripTime,
+                                Time = DateTime.Now                                
                             });
                         }
                         else
@@ -267,8 +263,8 @@ namespace Pzpp
                             {
 
                                 Device_Id = id,
-                                Success = false
-
+                                Success = false,
+                                Time = DateTime.Now
 
 
                             });
@@ -301,15 +297,9 @@ namespace Pzpp
                 DevicesList.Add(_Name + " " + _IPAddress);
                 DevicesIP.Add(_IPAddress);
                 IdControl.Add(db.Devices.ToList().Last().Id);
-                //DevicesList.Clear();
-                //IdControl.Clear();
-                //var ipAll = db.Devices.ToList();
-                
-                //foreach (var item in ipAll)
-                //{                   
-                //    DevicesList.Add(item.Name +" "+ item.IP);
-                //    IdControl.Add(item.Id);
-                //}
+                Name = "";
+                IPAddress = "";
+                Description = "";
             }
         }
 

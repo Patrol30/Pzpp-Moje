@@ -28,7 +28,7 @@ namespace Pzpp
             }
         }
 
-        static List<Devices> _Computers;
+        private List<Devices> _Computers;
         public List<Devices> Computers
         {
             get
@@ -43,6 +43,8 @@ namespace Pzpp
                 OnPropertyChanged();
             }
         }
+
+
 
 
     }    
