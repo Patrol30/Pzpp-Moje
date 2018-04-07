@@ -19,15 +19,20 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Margin="10">
-            <TextBlock Text="Give me your Name:" HorizontalAlignment="Center" Margin="5"/>
-            <TextBox Text="{Binding Name}" Margin="5"/>
-            <TextBlock Text="Give me your IP:" HorizontalAlignment="Center" Margin="5"/>
-            <TextBox Text="{Binding IPAddress}" Margin="5"/>
-            <TextBlock Text="Give me Description:" HorizontalAlignment="Center" Margin="5"/>
-            <TextBox Text="{Binding Description}" Margin="5"/>
-            <Button Command="{Binding AddDeviceCommand}" Margin="5" IsEnabled="{Binding CanAdd}" >
+            <TextBlock Text="Give me your Name:" HorizontalAlignment="Center" Margin="2"/>
+            <TextBox Text="{Binding Name}" Margin="3"/>
+            <TextBlock Text="Give me your IP:" HorizontalAlignment="Center" Margin="2"/>
+            <TextBox Text="{Binding IPAddress}" Margin="3"/>
+            <TextBlock Text="Give me Description:" HorizontalAlignment="Center" Margin="2"/>
+            <TextBox Text="{Binding Description}" Margin="3"/>
+            <Button Command="{Binding AddDeviceCommand}" Margin="3" IsEnabled="{Binding CanAdd}" >
                 <Button.Content>
                     <TextBlock Text="ADD" Typography.Capitals="PetiteCaps"/>
+                </Button.Content>
+            </Button>
+            <Button Command="{Binding SearchLanCommand}" Margin="3"  >
+                <Button.Content>
+                    <TextBlock Text="Search Lan" Typography.Capitals="PetiteCaps"/>
                 </Button.Content>
             </Button>
         </StackPanel>

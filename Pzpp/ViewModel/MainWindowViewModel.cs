@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
 
+
+//cała obsługa głównego okna (łączone przez Binding)
 namespace Pzpp
 {
     class MainWindowViewModel : INotifyPropertyChanged
@@ -23,18 +25,19 @@ namespace Pzpp
 
 
 
-        public MainWindowViewModel()
+        public MainWindowViewModel()//ustawienie początkowych wartości elementów
         {
-            OpenComputersTableCommand = new RelayCommand(OpenComputersTable);
+            OpenComputersTableCommand = new RelayCommand(OpenComputersTable); //stworzenie relaycommand tak by można było przypiosać funkcje do elementów okna (naciśnięcie przycisku itp.
             OpenResponsesTableCommand = new RelayCommand(OpenResponsesTable);
             AddDeviceCommand = new RelayCommand(AddDevice);
-            PingCommand = new RelayCommand(PingDevice);            
+            PingCommand = new RelayCommand(PingDevice);
+            SearchLanCommand = new RelayCommand(SearchLan);
             CanPing = false;
             CanAdd = false;
-            using (var db = new PingDataContext())
+            using (var db = new PingDataContext())// operowanie na bazie
             {
-                db.Database.CreateIfNotExists();
-                var devicesAll = db.Devices.ToList();
+                db.Database.CreateIfNotExists(); // stworzenie bazy jeśli nie istnieje 
+                var devicesAll = db.Devices.ToList(); // wpisanie wszyskich urządzeń do listy by potem poszczególne elementy dodać do właściwości ViewModelu
                 foreach (var item in devicesAll)
                 {
                     DevicesIP.Add(item.IP);
@@ -47,8 +50,8 @@ namespace Pzpp
         }
         #region properties
 
-        #region pinging properties
-        private ObservableCollection<string> _DevicesList = new ObservableCollection<string>();
+        #region pinging properties //własności obsługujące pingowanie
+        private ObservableCollection<string> _DevicesList = new ObservableCollection<string>();//lista urządzeń (nazwy i ip wyświetlane w rozwijanej liście) ObservableCollection - kolekcja obserwowalna by mieć pewność że wiemy kiedy się zmienia. Jest private (można użyć tylko w tej klasie) obsługą na zewnątrz jej zajmuję się DeviceList
         public ObservableCollection<string> DevicesList
         {
             get
@@ -57,9 +60,9 @@ namespace Pzpp
             }
             set
             {
-                _DevicesList = value;
+                _DevicesList = value; //przypisanie zmienionej wartości do _DeviceList
                 //PropertyChanged(this, new PropertyChangedEventArgs(nameof(DevicesIP)));  alternatywne by nie rozpisywać się tak za każdym razem jest funkcja OnPropertyChanged (użyta poniżej)
-                OnPropertyChanged();
+                OnPropertyChanged(); // służy to odświeżania przy zmianie (by wartości w widoku były takie same jak tu)
             }
 
         }
@@ -74,9 +77,9 @@ namespace Pzpp
             }
             set
             {
-                if (_SelectedDevice == value)
+                if (_SelectedDevice == value) //jeśli własność zostanie zmieniona na to samo nic nie rób
                     return;
-                if (value != -1)
+                if (value != -1) //zmiana w tej własności w niektórych przypadkach zmienia wartość innej własności
                     CanPing = true;
                 else
                     CanPing = false;
@@ -167,7 +170,7 @@ namespace Pzpp
                 if (_Name == value)
                     return;
                 _Name = value;
-                IPAddress = _IPAddress;
+                IPAddress = _IPAddress; // jest to dane by wywołać funkcje która sprawdza ip przy jego zmianie (jest tam całe sprawdzanie poprawności danych łącznie ze sprawdzeniem czy nazwa urządzenia jest wpisana)
                 OnPropertyChanged();
             }
         }
@@ -184,7 +187,7 @@ namespace Pzpp
             {
                
                 bool correct;
-                string Pattern = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$";
+                string Pattern = @"^([1-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])){3}$"; //regex do sprawdzenia poprawności danych
                 Regex check = new Regex(Pattern);
 
                 if (string.IsNullOrEmpty(value))
@@ -194,7 +197,7 @@ namespace Pzpp
                 if (correct)
                 {
 
-                    if (_Name == null||_Name=="")
+                    if (_Name == null||_Name=="") //sprawdza czy nazwa urządzenia jest wpisana jak nie to nie można dodać
                         CanAdd = false;
                     
                     else CanAdd = true;
@@ -231,31 +234,31 @@ namespace Pzpp
         #endregion
         #region Commands
 
-        public ICommand PingCommand { get; private set; }
-        private void PingDevice()
+        public ICommand PingCommand { get; private set; } //służy do wywołania funkcji przez binding musi być przypisana do funkcji w konstruktorze 
+        private void PingDevice() //funkcja pingowania
         {           
             Ping pinger = new Ping();
             try
             {
                 if (_SelectedDevice != -1)
                 {
-                    var id = IdControl[_SelectedDevice];
-                    PingReply reply = pinger.Send(DevicesIP[SelectedDevice]);
+                    var id = IdControl[_SelectedDevice];//bierze id zaznaczonego urządzenia 
+                    PingReply reply = pinger.Send(DevicesIP[SelectedDevice]);//przypisanie jakie ip pingujemy 
                     using (var db = new PingDataContext())
                     {
-                        if (reply.Status == IPStatus.Success)
+                        if (reply.Status == IPStatus.Success)//jeśli ping się powiódł 
                         {
                             PingStatusColor = "Green";
                             PingStatusText = "TRUE";
-                            db.Responses.Add(new Responses()
+                            db.Responses.Add(new Responses() //sapisanie donych do bazy
                             {
                                 Device_Id = id,
                                 Success = true,
-                                PingTime = reply.RoundtripTime,
-                                Time = DateTime.Now                                
+                                PingTime = reply.RoundtripTime,//czas pingu (ms)
+                                Time = DateTime.Now//Data pingu
                             });
                         }
-                        else
+                        else//jak się nie udał
                         {
                             PingStatusColor = "Red";
                             PingStatusText = "False";
@@ -269,7 +272,7 @@ namespace Pzpp
 
                             });
                         }
-                        db.SaveChanges();
+                        db.SaveChanges(); //zapis danych do bazy (zostaje przesłane do bazy SQL)
                     }
                 }
             }
@@ -282,7 +285,7 @@ namespace Pzpp
 
         public ICommand AddDeviceCommand { get; private set; }
 
-        private void AddDevice()
+        private void AddDevice() // dodawanie urządzenia 
         {
             using (var db = new PingDataContext())
             {
@@ -294,9 +297,9 @@ namespace Pzpp
                 });
                 
                 db.SaveChanges();
-                DevicesList.Add(_Name + " " + _IPAddress);
-                DevicesIP.Add(_IPAddress);
-                IdControl.Add(db.Devices.ToList().Last().Id);
+                DevicesList.Add(_Name + " " + _IPAddress); //dodanie nowego urządzenia do listy
+                DevicesIP.Add(_IPAddress);//dodanie ip
+                IdControl.Add(db.Devices.ToList().Last().Id);//dodanie id nowego elementu (bierze ostatnie id z bazy - to dodane)
                 Name = "";
                 IPAddress = "";
                 Description = "";
@@ -304,11 +307,11 @@ namespace Pzpp
         }
 
         public ICommand OpenComputersTableCommand { get;private set; }
-        private void OpenComputersTable()
+        private void OpenComputersTable()//funkcja która otwiera tabelkę urządzeń
         {            
             Computers computers = new Computers();
-            computers.ShowDialog();
-            using (var db = new PingDataContext())
+            computers.ShowDialog(); // nie można kożystać z głównego okna puki to jest otwarty (Dialog)
+            using (var db = new PingDataContext()) // wyczyszczenie i wpisanie danych na nowo (można w tym oknie usuwać dane więc po zamknięciu trzeba zaktualizować)
             {
                 DevicesIP.Clear();
                 IdControl.Clear();
@@ -328,6 +331,28 @@ namespace Pzpp
         {            
             ResponsesTable responses = new ResponsesTable();
             responses.ShowDialog();
+        }
+
+        public ICommand SearchLanCommand { get;private set; }
+
+        private void SearchLan()
+        {
+            LANDevices Lan = new LANDevices();
+            Lan.ShowDialog();
+            using (var db = new PingDataContext()) // wyczyszczenie i wpisanie danych na nowo (można w tym oknie usuwać dane więc po zamknięciu trzeba zaktualizować)
+            {
+                DevicesIP.Clear();
+                IdControl.Clear();
+                DevicesList.Clear();
+                var devicesAll = db.Devices.ToList();
+                foreach (var item in devicesAll)
+                {
+                    DevicesIP.Add(item.IP);
+                    IdControl.Add(item.Id);
+                    DevicesList.Add(item.Name + " " + item.IP);
+                }
+
+            }
         }
         #endregion
 

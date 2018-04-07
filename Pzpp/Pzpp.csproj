@@ -96,6 +96,9 @@
     <Compile Include="Computers.xaml.cs">
       <DependentUpon>Computers.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LANDevices.xaml.cs">
+      <DependentUpon>LANDevices.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Model\IEntity.cs" />
     <Compile Include="Model\PingDataContext.cs" />
     <Compile Include="Model\Devices.cs" />
@@ -104,10 +107,15 @@
       <DependentUpon>ResponsesTable.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ComputersViewModel.cs" />
+    <Compile Include="ViewModel\LANDevicesViewModel.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
     <Compile Include="ViewModel\RelayCommand.cs" />
     <Compile Include="ViewModel\ResponsesTableViewModel.cs" />
     <Page Include="Computers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="LANDevices.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -27,11 +27,11 @@ namespace Pzpp
             DeleteCommand = new RelayCommand(Delete);
             using (var db = new PingDataContext())
             {
-                Computers = new ObservableCollection<Devices>(db.Devices.ToList());
+                Computers = new ObservableCollection<Devices>(db.Devices.ToList()); //przypisanie tabelki z bazy do programu (na ten sposób wpadłem puźniej dlatego w innych jest to zrobione przez przegląd listy - MainWindowViewModel)
             }
         }
 
-        private ObservableCollection<Devices> _Computers = new ObservableCollection<Devices>();
+        private ObservableCollection<Devices> _Computers = new ObservableCollection<Devices>(); //tabelka komputerów
         public ObservableCollection<Devices> Computers
         {
             get
@@ -48,7 +48,7 @@ namespace Pzpp
         }
 
 
-        private int _SelectedDevice;
+        private int _SelectedDevice;//zaznaczony wiersz tabelki
         public int SelectedDevice
         {
             get
@@ -64,15 +64,15 @@ namespace Pzpp
             }
         }
         public ICommand DeleteCommand { get; private set; }
-        private void Delete()
+        private void Delete()//funkcja usuwania rekordów z bazy (usuwa też powiązane kaskadowo)
         {
             using (var db = new PingDataContext())
             {
-                Devices device = new Devices() { Id = _Computers[_SelectedDevice].Id };               
-                db.Devices.Attach(device);
-                db.Devices.Remove(device);
+                Devices device = new Devices() { Id = _Computers[_SelectedDevice].Id };//sprawdzenie id zaznaczoneko rekordu i stworzenie jego obiektu               
+                db.Devices.Attach(device);//przyłączenie tego obiektu do istniejącego w bazie (id jest tylko jedno)
+                db.Devices.Remove(device);//usunięcie rekordu
                 db.SaveChanges();
-                Computers = new ObservableCollection<Devices>(db.Devices.ToList());
+                Computers = new ObservableCollection<Devices>(db.Devices.ToList());//aktualizacja tabelki
             }
         }
 

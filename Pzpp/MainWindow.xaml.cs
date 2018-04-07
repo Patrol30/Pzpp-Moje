@@ -31,15 +31,12 @@ namespace Pzpp
     
     public MainWindow()
         {
-            //using (var db = new PingDataContext())
-            //{
-            //    db.Database.CreateIfNotExists();
-            //}
+           
             string dataPath = AppDomain.CurrentDomain.BaseDirectory;
             AppDomain
                 .CurrentDomain
-                .SetData("DataDirectory", dataPath);
-            DataContext = new MainWindowViewModel();
+                .SetData("DataDirectory", dataPath); 
+            DataContext = new MainWindowViewModel();//przypisanie viewmodelu do okna (jako źródło danych)
             InitializeComponent();
         }
 
@@ -47,16 +44,6 @@ namespace Pzpp
 
         
 
-        //private void Button_Click_1(object sender, RoutedEventArgs e)
-        //{
-        //    ComputersTable CT = new ComputersTable();
-        //    CT.Show();
-        //}
-
-        //private void Button_Click_2(object sender, RoutedEventArgs e)
-        //{
-        //    ResponsesTable RT = new ResponsesTable();
-        //    RT.Show();
-        //}
+      
     }
 }
