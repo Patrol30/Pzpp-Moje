@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -15,6 +17,10 @@ namespace Pzpp
 {
     class LANDevicesViewModel : INotifyPropertyChanged
     {
+
+        
+
+
         #region property changed func
         public event PropertyChangedEventHandler PropertyChanged = (sender, e) => { };
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -61,20 +67,52 @@ namespace Pzpp
             //    }
             //}
 
-           var a = NetworkInterface.GetAllNetworkInterfaces()
-    .SelectMany(adapter => adapter.GetIPProperties().UnicastAddresses)
-    .Where(adr => adr.Address.AddressFamily == AddressFamily.InterNetwork && adr.IsDnsEligible)
-    .Select(adr => adr.Address.ToString());
-            foreach(var cos in a)
+            //       var a = NetworkInterface.GetAllNetworkInterfaces()
+            //.SelectMany(adapter => adapter.GetIPProperties().UnicastAddresses)
+            //.Where(adr => adr.Address.AddressFamily == AddressFamily.InterNetwork && adr.IsDnsEligible)
+            //.Select(adr => adr.Address.ToString());
+            //        foreach(var cos in a)
+            //        {
+            //            _Computers.Add(new Devices()
+            //            {
+            //                IP = cos,
+            //                Name = Dns.GetHostEntry(cos).HostName
+
+            //            });
+            //        }
+
+            string sHostName = Dns.GetHostName();
+            string ipE = Dns.GetHostAddresses(sHostName)[1].ToString();
+            string baseIP = ipE.Remove(ipE.LastIndexOf('.')+1);
+             
+           
+
+                     
+
+            
+            
+
+            
+
+            for(int i=1; i<256;i++)
             {
+
+                Ping p = new Ping();
+                PingReply reply = p.Send(string.Concat(baseIP, i.ToString()), 5);
+                if(reply.Status == IPStatus.Success)
                 _Computers.Add(new Devices()
                 {
-                    IP = cos,
-                    Name = Dns.GetHostEntry(cos).HostName
-
+                    IP = reply.Address.ToString(),
+                    Name = Dns.GetHostEntry(reply.Address.ToString()).HostName
                 });
+               
             }
+
+            
+            
         }
+
+
 
         private ObservableCollection<Devices> _Computers = new ObservableCollection<Devices>(); //tabelka komputerów
         public ObservableCollection<Devices> Computers
