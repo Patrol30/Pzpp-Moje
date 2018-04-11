@@ -107,13 +107,12 @@ namespace Pzpp
                             Name = Dns.GetHostEntry(reply.Address.ToString()).HostName
                         });
                 }
-                catch (Exception)
+                catch (PingException)
                 {
-
-                    throw;
+                    // Discard PingExceptions and return false;
                 }
-                
-               
+
+
             }
 
             
