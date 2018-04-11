@@ -96,15 +96,23 @@ namespace Pzpp
 
             for(int i=1; i<256;i++)
             {
-
-                Ping p = new Ping();
-                PingReply reply = p.Send(string.Concat(baseIP, i.ToString()), 5);
-                if(reply.Status == IPStatus.Success)
-                _Computers.Add(new Devices()
+                try
                 {
-                    IP = reply.Address.ToString(),
-                    Name = Dns.GetHostEntry(reply.Address.ToString()).HostName
-                });
+                    Ping p = new Ping();
+                    PingReply reply = p.Send(string.Concat(baseIP, i.ToString()), 5);
+                    if (reply.Status == IPStatus.Success)
+                        _Computers.Add(new Devices()
+                        {
+                            IP = reply.Address.ToString(),
+                            Name = Dns.GetHostEntry(reply.Address.ToString()).HostName
+                        });
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+                
                
             }
 
